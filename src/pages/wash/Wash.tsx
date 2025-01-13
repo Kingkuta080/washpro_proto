@@ -16,10 +16,14 @@ import {
   TableRow,
   Paper,
   Chip,
-  styled
+  styled,
+  CircularProgress,
+  Pagination
 } from '@mui/material';
 import { Icon } from '@iconify/react';
 import { LineChart, BarChart, XAxis, YAxis, Tooltip, CartesianGrid, Line, Bar, ResponsiveContainer } from 'recharts';
+import { blue, green, orange, red } from '@mui/material/colors';
+import { FaToilet } from 'react-icons/fa6';
 
 const StyledSelect = styled(Select)({
   minWidth: 120,
@@ -41,38 +45,6 @@ const contaminationData = [
   { source: 'Source 2', '2022': 60, '2023': 45 },
   { source: 'Source 3', '2022': 40, '2023': 30 },
   { source: 'Source 4', '2022': 70, '2023': 55 },
-];
-
-const sanitationFacilities = [
-  {
-    facilityName: "Community Borehole 1",
-    location: "Angwuwan Sarki",
-    condition: "Good",
-    lastDate: "2024-01-05",
-    nextDate: "2025-01-12"
-  },
-  {
-    facilityName: "Waste Disposal Unit A",
-    location: "Angwuwan Shanu",
-    condition: "Fair",
-    lastDate: "2024-01-03",
-    nextDate: "2025-01-15"
-  },
-];
-
-const hygienePrograms = [
-  {
-    date: "2025-01-02",
-    trainerName: "Aliyu Abdullahi",
-    participantCount: 25,
-    feedbackSummary: "Participants appreciated practical demonstrations but suggested extended sessions"
-  },
-  {
-    date: "2024-12-18",
-    trainerName: "Musa Ibrahim",
-    participantCount: 30,
-    feedbackSummary: "Engaging session; participants requested additional follow-up training"
-  },
 ];
 
 interface MetricCardProps {
@@ -183,92 +155,202 @@ const Wash: React.FC = () => {
       </Grid>
 
       {/* Sanitation Facilities */}
-    <Box sx={{ p: 3 }}>
-      <Grid container spacing={3} mb={3}>
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" mb={2}>Historical Trends in Water Quality</Typography>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={waterQualityData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#1976d2" />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Paper sx={{ height: '100%' }}>
-            <Box sx={{ bgcolor: '#1a237e', p: 2 }}>
-              <Typography variant="h6" color="white">Sanitation Facilities</Typography>
+      <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+        Sanitation Facilities
+      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 3,
+          alignItems: 'flex-start',
+        }}
+      >
+        {/* Card Section */}
+        <Card sx={{ width: 250, textAlign: 'center', padding: 2 }}>
+          <CardContent>
+            <FaToilet size={48} color="#1976d2" />  
+          <Typography variant="h4" component="div" sx={{ marginBottom: 1 }}>
+              36
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
+              Number of operational toilets.
+            </Typography>
+            <Box sx={{ position: 'relative', display: 'inline-flex', marginBottom: 1 }}>
+              <CircularProgress
+                variant="determinate"
+                value={85}
+                size={60}
+                thickness={5}
+                sx={{ color: green[500] }}
+              />
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography variant="h6" component="div" color="text.primary">
+                  85%
+                </Typography>
+              </Box>
             </Box>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Facility Name</TableCell>
-                    <TableCell>Location</TableCell>
-                    <TableCell>Condition</TableCell>
-                    <TableCell>Last Date</TableCell>
-                    <TableCell>Next Date</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {sanitationFacilities.map((facility, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{facility.facilityName}</TableCell>
-                      <TableCell>{facility.location}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={facility.condition}
-                          color={facility.condition === 'Good' ? 'success' : 
-                                 facility.condition === 'Fair' ? 'warning' : 'error'}
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell>{facility.lastDate}</TableCell>
-                      <TableCell>{facility.nextDate}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
+            <Typography variant="body2" color="text.secondary">
+              % of facilities needing maintenance.
+            </Typography>
+          </CardContent>
+        </Card>
 
-      {/* Hygiene Programs */}
-      <Paper sx={{ mb: 3 }}>
-        <Box sx={{ bgcolor: '#1a237e', p: 2 }}>
-          <Typography variant="h6" color="white">Hygiene Programs</Typography>
-        </Box>
-        <TableContainer>
+        {/* Table Section */}
+        <TableContainer component={Paper} sx={{ flex: 1 }}>
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Date</TableCell>
-                <TableCell>Trainer Name</TableCell>
-                <TableCell>Participant Count</TableCell>
-                <TableCell>Feedback Summary</TableCell>
+                <TableCell><strong>Facility Name</strong></TableCell>
+                <TableCell><strong>Location</strong></TableCell>
+                <TableCell><strong>Condition</strong></TableCell>
+                <TableCell><strong>LM Date</strong></TableCell>
+                <TableCell><strong>NSM Date</strong></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {hygienePrograms.map((program, index) => (
+              {rows.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell>{program.date}</TableCell>
-                  <TableCell>{program.trainerName}</TableCell>
-                  <TableCell>{program.participantCount}</TableCell>
-                  <TableCell>{program.feedbackSummary}</TableCell>
+                  <TableCell>{row.facilityName}</TableCell>
+                  <TableCell>{row.location}</TableCell>
+                  <TableCell>
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        padding: '2px 8px',
+                        borderRadius: '8px',
+                        backgroundColor: getConditionColor(row.condition),
+                        color: '#fff',
+                        textAlign: 'center',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {row.condition}
+                    </Box>
+                  </TableCell>
+                  <TableCell>{row.lmDate}</TableCell>
+                  <TableCell>{row.nsmDate}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 2 }}>
+            <Pagination count={1} color="primary" />
+          </Box>
         </TableContainer>
-      </Paper>
+      </Box>
+    </Box>
+
+      {/* Hygiene Programs */}
+      <Box sx={{ padding: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+        Sanitation Facilities
+      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          gap: 3,
+          alignItems: 'flex-start',
+        }}
+      >
+        {/* Card Section */}
+        <Card sx={{ width: 250, textAlign: 'center', padding: 2 }}>
+          <CardContent>
+            <FaToilet size={48} color="#1976d2" />  
+          <Typography variant="h4" component="div" sx={{ marginBottom: 1 }}>
+              36
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ marginBottom: 2 }}>
+              Number of operational toilets.
+            </Typography>
+            <Box sx={{ position: 'relative', display: 'inline-flex', marginBottom: 1 }}>
+              <CircularProgress
+                variant="determinate"
+                value={85}
+                size={60}
+                thickness={5}
+                sx={{ color: green[500] }}
+              />
+              <Box
+                sx={{
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography variant="h6" component="div" color="text.primary">
+                  85%
+                </Typography>
+              </Box>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              % of facilities needing maintenance.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        {/* Table Section */}
+        <TableContainer component={Paper} sx={{ flex: 1 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell><strong>Facility Name</strong></TableCell>
+                <TableCell><strong>Location</strong></TableCell>
+                <TableCell><strong>Condition</strong></TableCell>
+                <TableCell><strong>LM Date</strong></TableCell>
+                <TableCell><strong>NSM Date</strong></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell>{row.facilityName}</TableCell>
+                  <TableCell>{row.location}</TableCell>
+                  <TableCell>
+                    <Box
+                      sx={{
+                        display: 'inline-block',
+                        padding: '2px 8px',
+                        borderRadius: '8px',
+                        backgroundColor: getConditionColor(row.condition),
+                        color: '#fff',
+                        textAlign: 'center',
+                        fontSize: '0.875rem',
+                      }}
+                    >
+                      {row.condition}
+                    </Box>
+                  </TableCell>
+                  <TableCell>{row.lmDate}</TableCell>
+                  <TableCell>{row.nsmDate}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', padding: 2 }}>
+            <Pagination count={1} color="primary" />
+          </Box>
+        </TableContainer>
+      </Box>
+    </Box>
 
       {/* Progress Tracker */}
       <Paper sx={{ p: 2 }}>
@@ -297,3 +379,47 @@ const Wash: React.FC = () => {
 };
 
 export default Wash;
+
+const rows = [
+  {
+    facilityName: 'Community Borehole 1',
+    location: 'Anguwan Sarki',
+    condition: 'Poor',
+    lmDate: '2025-01-05',
+    nsmDate: '2025-01-12',
+  },
+  {
+    facilityName: 'Waste Disposal Unit A',
+    location: 'Anguwan Shanu',
+    condition: 'Fair',
+    lmDate: '2025-01-03',
+    nsmDate: '2025-01-10',
+  },
+  {
+    facilityName: 'Water Filtration Plant 3',
+    location: 'Doka North',
+    condition: 'Good',
+    lmDate: '2024-12-15',
+    nsmDate: '2024-12-20',
+  },
+  {
+    facilityName: 'Public Latrine Block 2',
+    location: 'Tudun Wada',
+    condition: 'Fair',
+    lmDate: '2024-12-15',
+    nsmDate: '2024-12-20',
+  },
+];
+
+const getConditionColor = (condition: string) => {
+  switch (condition) {
+    case 'Good':
+      return green[500];
+    case 'Fair':
+      return orange[500];
+    case 'Poor':
+      return red[500];
+    default:
+      return blue[500];
+  }
+};

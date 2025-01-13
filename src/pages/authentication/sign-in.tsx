@@ -1,5 +1,4 @@
 import { FC, useState } from "react";
-import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Button,
@@ -36,7 +35,6 @@ const SignInPage: FC = function () {
     password: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
 
   // Responsive hook for detecting screen size
   const isMobile = useMediaQuery("(max-width:768px)");
@@ -45,19 +43,10 @@ const SignInPage: FC = function () {
     e.preventDefault();
     setLoading(true);
     setIsSubmitting(true);
-  
-    // Trim whitespace from the email before submission
-    const sanitizedFormData = {
-      ...formData,
-      email: formData.email.trim(),
-    };
-  
+
     try {
-      const response = await apiController.post<LoginResponse>(
-        "/user/login",
-        sanitizedFormData
-      );
-  
+      const response = await apiController.post<LoginResponse>("/user/login", formData);
+
       logIn(response.user, response.token, response.refreshToken);
       setAlert({ variant: "success", message: "Login successful" });
       navigate("/");
@@ -71,7 +60,7 @@ const SignInPage: FC = function () {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <Box
       sx={{
@@ -182,16 +171,11 @@ const SignInPage: FC = function () {
                 setFormData((prev) => ({ ...prev, password: e.target.value }))
               }
               required
-              type={showPassword ? "text" : "password"}
+              type="password"
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Button
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      onMouseDown={(e) => e.preventDefault()}
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </Button>
+                    <VisibilityOff />
                   </InputAdornment>
                 ),
               }}

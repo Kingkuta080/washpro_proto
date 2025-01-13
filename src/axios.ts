@@ -99,10 +99,9 @@ class ApiController {
     method: 'get' | 'post' | 'put' | 'delete',
     endpoint: string,
     data?: any,
-    params?: any,
-    config?: any
+    params?: any
   ): Promise<T> {
-    this.updateToken();
+    this.updateToken(); // Ensure the token is up-to-date before each request
 
     try {
       const response: AxiosResponse<ApiResponse<T>> = await this.axiosInstance({
@@ -110,12 +109,12 @@ class ApiController {
         url: endpoint,
         data,
         params,
-        ...config
       });
-
+      // Check if response is successful
       if (response.data.ok) {
-        return response.data.data as T;
+        return response.data.data as T; // Return the data
       } else {
+        // Throw an error with the message from the server
         throw new Error(response.data.message || 'An error occurred');
       }
     } catch (error) {
@@ -128,12 +127,12 @@ class ApiController {
     return this.request<T>('get', endpoint, undefined, params);
   }
 
-  async post<T>(endpoint: string, data?: any, p0?: { headers: { 'Content-Type': string; }; }): Promise<T> {
+  async post<T>(endpoint: string, data?: any): Promise<T> {
     return this.request<T>('post', endpoint, data);
   }
 
-  async put<T>(endpoint: string, data?: any, config?: any): Promise<T> {
-    return this.request<T>('put', endpoint, data, undefined, config);
+  async put<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>('put', endpoint, data);
   }
 
   async delete<T>(endpoint: string, data?: any): Promise<T> {

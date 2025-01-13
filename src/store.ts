@@ -32,14 +32,12 @@ export const useAuthStore = create<AuthState>()(
   )
 );
 
-interface SnackState {
-  message: string;
-  variant: 'success' | 'error' | 'warning' | 'info';
-  setAlert: (alert: { message: string; variant: 'success' | 'error' | 'warning' | 'info' }) => void;
-}
-
-export const useSnackStore = create<SnackState>((set) => ({
-  message: '',
-  variant: 'info',
-  setAlert: (alert) => set(alert),
+export const useSnackStore = create((set) => ({
+  message: null,
+  variant: null as 'success' | 'error' | 'info' | 'warning' | null,
+  isLoading: false,
+  setLoading: (bool: boolean) => set({ isLoading: bool }),
+  setAlert: async ({ variant, message }: { variant: 'success' | 'error' | 'info' | 'warning', message: string }) => {
+    set({ variant, message });
+  },
 }));
