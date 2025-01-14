@@ -1,8 +1,17 @@
-import React from 'react';
+import {
+  Assignment,
+  BarChart,
+  CleaningServices,
+  ReportProblem,
+  Wc,
+} from '@mui/icons-material';
 import {
   Box,
+  Card,
+  Grid,
   Typography,
-  Paper,
+  Select,
+  MenuItem,
   Button,
   Table,
   TableBody,
@@ -10,273 +19,272 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Grid,
-  Chip,
-  styled,
 } from '@mui/material';
-import {
-  CheckCircle,
-  Warning,
-} from '@mui/icons-material';
-import { FaDownload, FaFilter, FaHandSparkles, FaSink, FaWrench, FaCalendar, FaCalendarCheck } from 'react-icons/fa';
-import { BsExclamationCircleFill } from 'react-icons/bs';
-import { FaArrowTrendDown } from 'react-icons/fa6';
 
-interface StatCardProps {
-  title: string;
-  value: number;
-  icon?: React.ReactNode;
-  bgColor?: string;
-}
-
-interface ToiletTypeRow {
-  type: string;
-  count: number;
-  status: 'Operational' | 'Maintenance';
-}
-
-const StyledPaper = styled(Paper)(({ theme }) => ({
-  padding: theme.spacing(3),
-  borderRadius: theme.spacing(1),
-  boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-}));
-
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, bgColor = '#E3F2FD' }) => (
-  <StyledPaper>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-      <Box>
-        <Typography color="text.secondary" variant="body2">
-          {title}
-        </Typography>
-        <Typography variant="h4" sx={{ mt: 1, fontWeight: 500 }}>
-          {value}
-        </Typography>
-      </Box>
-      {icon && (
-        <Box sx={{ 
-          bgcolor: bgColor, 
-          p: 1, 
-          borderRadius: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center' 
-        }}>
-          {icon}
-        </Box>
-      )}
-    </Box>
-  </StyledPaper>
-);
-
-const ActionButton = styled(Button)(({ theme }) => ({
-  width: '100%',
-  justifyContent: 'flex-start',
-  padding: theme.spacing(2),
-  borderRadius: theme.spacing(1),
-  textTransform: 'none',
-}));
-
-const ToiletFacilities: React.FC = () => {
-  const toiletTypes: ToiletTypeRow[] = [
+const ToiletStats = () => {
+  const toiletTypes = [
     { type: 'Western Style', count: 50, status: 'Operational' },
     { type: 'Eastern Style', count: 30, status: 'Maintenance' },
     { type: 'Accessible', count: 20, status: 'Operational' },
   ];
 
+  const actions = [
+    {
+      icon: <ReportProblem fontSize="small" sx={{ color: '#3b82f6' }} />,
+      label: 'Report Issue',
+      bgColor: '#f1f5f9',
+      textColor: '#3b82f6',
+    },
+    {
+      icon: <CleaningServices fontSize="small" sx={{ color: '#8b5cf6' }} />,
+      label: 'Schedule Cleaning',
+      bgColor: '#faf5ff',
+      textColor: '#8b5cf6',
+    },
+    {
+      icon: <Assignment fontSize="small" sx={{ color: '#22c55e' }} />,
+      label: 'Maintenance Log',
+      bgColor: '#f0fdf4',
+      textColor: '#22c55e',
+    },
+    {
+      icon: <BarChart fontSize="small" sx={{ color: '#f97316' }} />,
+      label: 'View Analytics',
+      bgColor: '#fff7ed',
+      textColor: '#f97316',
+    },
+  ];
+
   return (
-    <Box sx={{ p: 3, bgcolor: '#F9FAFB', minHeight: '100vh' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-        <Box>
-          <Typography variant="h5" sx={{ color: '#25306B', fontWeight: 600 }}>
-            Toilet Facilities
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Detailed insights about your selected location
-          </Typography>
-        </Box>
-        <Box>
+    <Box sx={{ p: 3 }}>
+      {/* Header Section */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          mb: 3,
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+          Toilet Facilities
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Select size="small" defaultValue="lga" sx={{ minWidth: 120 }}>
+            <MenuItem value="lga">LGA</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="ward" sx={{ minWidth: 120 }}>
+            <MenuItem value="ward">Ward</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="village" sx={{ minWidth: 120 }}>
+            <MenuItem value="village">Village</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="hamlet" sx={{ minWidth: 120 }}>
+            <MenuItem value="hamlet">Hamlet</MenuItem>
+          </Select>
           <Button
-            startIcon={<FaFilter style={{color: "#1F2937"}} />}
-            variant="outlined"
-            sx={{ mr: 1 }}
-          >
-            <Typography variant="body1" color="#1F2937">Filter</Typography>
-          </Button>
-          <Button
-            startIcon={<FaDownload />}
             variant="contained"
-            sx={{ bgcolor: '#2CBEEF' }}
+            sx={{
+              bgcolor: '#00b4d8',
+              '&:hover': { bgcolor: '#0096c7' },
+            }}
           >
-            Export Report
+            View Report
           </Button>
         </Box>
       </Box>
 
-      <Typography variant="h6" color='#1F2937' sx={{ mb: 2  }}>
-        Handwashing Facilities
-      </Typography>
+      {/* Stats Cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {[
+          { icon: <Wc fontSize="large" />, label: 'Total Units', value: 85 },
+          { icon: <Wc fontSize="large" />, label: 'WC', value: 20 },
+        ].map((item, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card
+              sx={{
+                p: 2,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {item.icon}
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: 'bold', mt: 2, color: '#1e3a8a' }}
+              >
+                {item.value}
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                {item.label}
+              </Typography>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-  <Grid item xs={12} md={4}>
-    <StatCard
-      title="Total Units"
-      value={85}
-      icon={<FaSink style={{ color: '#0EA5E9' }} />}
-      bgColor="#E3F2FD"
-    />
-  </Grid>
-  <Grid item xs={12} md={4}>
-    <StatCard
-      title="Functional"
-      value={77}
-      icon={<FaHandSparkles style={{ color: '#4CAF50' }} />}
-      bgColor="#E8F5E9"
-    />
-  </Grid>
-  <Grid item xs={12} md={4}>
-    <StatCard
-      title="Under Repair"
-      value={7}
-      icon={<FaWrench style={{ color: '#FF9800' }} />}
-      bgColor="#FFF3E0"
-    />
-  </Grid>
-</Grid>
-
-<Grid container spacing={2} sx={{ mb: 3 }}>
-  <Grid item xs={12} md={4}>
-    <StatCard
-      title="Latrines"
-      value={34}
-      icon={<FaSink style={{ color: '#0EA5E9' }} />}
-      bgColor="#E3F2FD"
-    />
-  </Grid>
-  <Grid item xs={12} md={4}>
-    <StatCard
-      title="Squatting"
-      value={18}
-      icon={<FaSink style={{ color: '#0EA5E9' }} />}
-      bgColor="#E3F2FD"
-    />
-  </Grid>
-  <Grid item xs={12} md={4}>
-    <StatCard
-      title="WC"
-      value={20}
-      icon={<FaSink style={{ color: '#0EA5E9' }} />}
-      bgColor="#E3F2FD"
-    />
-  </Grid>
-</Grid>
-
+      {/* Toilet Types Overview */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={8}>
-          <StyledPaper>
-            <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-              Toilet Types Overview
-            </Typography>
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>TYPE</TableCell>
-                    <TableCell>COUNT</TableCell>
-                    <TableCell>STATUS</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {toiletTypes.map((row) => (
-                    <TableRow key={row.type}>
-                      <TableCell>{row.type}</TableCell>
-                      <TableCell>{row.count}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.status}
-                          color={row.status === 'Operational' ? 'success' : 'warning'}
-                          size="small"
-                        />
-                      </TableCell>
+          <Card sx={{ height: '100%' }}>
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Toilet Types Overview
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: '#1e3a8a' }}>
+                      <TableCell sx={{ color: 'white' }}>Type</TableCell>
+                      <TableCell sx={{ color: 'white' }}>Count</TableCell>
+                      <TableCell sx={{ color: 'white' }}>Status</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </StyledPaper>
+                  </TableHead>
+                  <TableBody>
+                    {toiletTypes.map((type) => (
+                      <TableRow key={type.type}>
+                        <TableCell>{type.type}</TableCell>
+                        <TableCell>{type.count}</TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              bgcolor:
+                                type.status === 'Operational'
+                                  ? '#dcfce7'
+                                  : '#fef9c3',
+                              color:
+                                type.status === 'Operational'
+                                  ? '#166534'
+                                  : '#854d0e',
+                              px: 2,
+                              py: 0.5,
+                              borderRadius: 1,
+                              display: 'inline-block',
+                            }}
+                          >
+                            {type.status}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Card>
         </Grid>
 
+        {/* Maintenance Status */}
         <Grid item xs={12} md={4}>
-          <StyledPaper>
-            <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
-              Maintenance Status
-            </Typography>
-            <Box sx={{ mb: 4, p: 2, bgcolor: '#F0FDF4', borderRadius: 1 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography>Well Maintained</Typography>
-                <CheckCircle color="success" />
-              </Box>
-              <Typography variant="h4" color="success.main" sx={{ mt: 1 }}>
-                75%
+          <Card sx={{ height: '100%' }}>
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                Maintenance Status
               </Typography>
-            </Box>
-            <Box sx={{ p: 2, bgcolor: '#FEF2F2', borderRadius: 1 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography>Needs Attention</Typography>
-                <BsExclamationCircleFill color="#FF0000" />
+              <Box
+                sx={{
+                  bgcolor: '#f0fdf4',
+                  p: 3,
+                  borderRadius: 1,
+                  mb: 2,
+                  height: '100%',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography>Well Maintained</Typography>
+                  <Typography variant="h4" color="success.main">
+                    75%
+                  </Typography>
+                </Box>
               </Box>
-              <Typography variant="h4" color="error.main" sx={{ mt: 1 }}>
-                25%
-              </Typography>
+
+              <Box
+                sx={{
+                  bgcolor: '#fef2f2',
+                  p: 3,
+                  borderRadius: 1,
+                  height: '100%',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography>Needs Attention</Typography>
+                  <Typography variant="h4" color="error.main">
+                    25%
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
-          </StyledPaper>
+          </Card>
         </Grid>
       </Grid>
 
-      <StyledPaper sx={{ mt: 3 }}>
-        <Typography variant="h6" sx={{ mb: 3 }}>
-          Quick Actions
-        </Typography>
-        <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-            <ActionButton
-              variant="outlined"
-              sx={{ backgroundColor: "#EFF6FF", color: "#1E3A8A" }}
-              startIcon={<Warning />}
+      {/* Quick Actions */}
+      <Box sx={{ mt: 3 }}>
+        <Card>
+          <Box sx={{ p: 3 }}>
+            <Typography
+              variant="h6"
+              sx={{ mb: 2, fontWeight: 500, color: '#1e293b' }}
             >
-              Report Issue
-            </ActionButton>
-            </Grid>
-          <Grid item xs={12} md={6}>
-            <ActionButton
-              variant="outlined"
-              sx={{ backgroundColor: "#FAF5FF", color: "#7E22CE" }}
-              startIcon={<FaCalendar />}
+              Quick Actions
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 2,
+              }}
             >
-              Schedule Cleaning
-            </ActionButton>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <ActionButton
-              variant="outlined"
-              sx={{ backgroundColor: "#F0FDF4", color: "#15803D" }}
-              startIcon={<FaCalendarCheck />}
-            >
-              Maintenance Log
-            </ActionButton>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <ActionButton
-              variant="outlined"
-              sx={{ backgroundColor: "#FFF7ED", color:"#C2410C" }}
-              startIcon={<FaArrowTrendDown />}
-            >
-              View Analytics
-            </ActionButton>
-          </Grid>
-        </Grid>
-      </StyledPaper>
+              {actions.map((action, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    p: 3,
+                    bgcolor: action.bgColor,
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      opacity: 0.9,
+                      transform: 'translateY(-1px)',
+                    },
+                  }}
+                >
+                  {action.icon}
+                  <Typography
+                    sx={{
+                      color: action.textColor,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {action.label}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        </Card>
+      </Box>
     </Box>
   );
 };
 
-export default ToiletFacilities;
+export default ToiletStats;

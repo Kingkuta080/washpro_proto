@@ -1,45 +1,86 @@
 import React from 'react';
 import {
   Box,
-  Typography,
-  Card,
-  Button,
   Paper,
+  Typography,
+  IconButton,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  Pagination,
-  Tooltip,
+  Chip,
+  Card,
+  Button,
 } from '@mui/material';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import WarningIcon from '@mui/icons-material/Warning';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import InfoIcon from '@mui/icons-material/Info';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Legend } from 'recharts';
-import { FaChartLine, FaDownload, FaFilter } from 'react-icons/fa';
+import {
+  Add as AddIcon,
+  Remove as RemoveIcon,
+  Layers as LayersIcon,
+  Fullscreen as FullscreenIcon,
+  MoreVert as MoreVertIcon,
+  Visibility as VisibilityIcon,
+  MoreHoriz as MoreHorizIcon,
+  Warning as WarningIcon,
+  FilterAlt as FilterAltIcon,
+} from '@mui/icons-material';
+import { FaChartLine } from 'react-icons/fa';
 
-const timeDistributionData = [
-  {
-    name: 'Count',
-    'Motorized Boreholes': 25,
-    'Wells (Covered & Open)': 60,
-    'Surface Water Points': 35,
-  },
-  {
-    name: 'Percentage',
-    'Motorized Boreholes': 80,
-    'Wells (Covered & Open)': 25,
-    'Surface Water Points': 15,
-  },
-];
+// Stats Card Component
+interface StatsCardProps {
+  title: string;
+  value: string;
+  icon: React.ReactElement;
+  iconColor: string;
+}
+
+const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, iconColor }) => (
+  <Card sx={{ flex: 1, p: 2, borderRadius: 2 }}>
+    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+      {title}
+    </Typography>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Typography variant="h4" sx={{ fontWeight: 600 }}>
+        {value}
+      </Typography>
+      <Box
+        sx={{
+          bgcolor: `${iconColor}15`,
+          p: 1,
+          borderRadius: '50%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        {React.cloneElement(icon, { sx: { color: iconColor } })}
+      </Box>
+    </Box>
+  </Card>
+);
 
 const OpenDefication = () => {
+  const data = [
+    { location: 'Sector 1, Block A', date: '08:30 am', demographics: 'Adult Male', status: 'Low' },
+    { location: 'Sector 2, Block B', date: '09:00 am', demographics: 'Child', status: 'High' },
+    { location: 'Sector 3, Block C', date: '09:30 am', demographics: 'Adult Male', status: 'Low' },
+    { location: 'Sector 4, Block D', date: '10:00 aM', demographics: 'Adult Female', status: 'Medium' },
+  ];
+
+  const getStatusChipColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'high':
+        return { bg: '#fef2f2', color: '#ef4444' };
+      case 'medium':
+        return { bg: '#fefce8', color: '#eab308' };
+      case 'low':
+        return { bg: '#f0fdf4', color: '#22c55e' };
+      default:
+        return { bg: '#f0fdf4', color: '#22c55e' };
+    }
+  };
+
   return (
     <Box sx={{ p: 3, bgcolor: '#F8F9FA', minHeight: '100vh' }}>
       {/* Header */}
@@ -84,206 +125,169 @@ const OpenDefication = () => {
         <StatsCard
           title="Average Daily Cases"
           value="42"
-          icon={<FaChartLine style={{ color: "#CA8A04" }} />}
-          iconColor="#ff9800"
+          icon={<FaChartLine style={{ fontSize: 24 }} />}
+          iconColor="#CA8A04"
         />
       </Box>
 
-      {/* Main Content */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-        {/* Geographic Distribution */}
-        <Paper sx={{ flex: 1, p: 2, borderRadius: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" fontWeight={600}>Geographic Distribution</Typography>
-            <Box>
-              <IconButton size="small">
-                <FullscreenIcon />
-              </IconButton>
-              <IconButton size="small">
-                <InfoIcon />
-              </IconButton>
-            </Box>
-          </Box>
-          <Box sx={{ height: 400, bgcolor: '#F8FAFC', borderRadius: 1, overflow: 'hidden' }}>
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d150598.46582809655!2d7.648291125907573!3d11.296615180519947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x11b27fc3df7cf997%3A0x7f813ac2a29bec28!2sKudan%2C%20Kaduna!5e0!3m2!1sen!2sng!4v1735721268833!5m2!1sen!2sng"
-              style={{
-                border: 0,
-                width: '100%',
-                height: '100%',
-              }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </Box>
-        </Paper>
-
-        {/* Time Distribution */}
-        <Paper sx={{ flex: 1, p: 2, borderRadius: 2 }}>
-          <Typography variant="h6" fontWeight={600} sx={{ mb: 5 }}>Time Distribution</Typography>
-          <Box sx={{ height: 400 }}>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={timeDistributionData}>
-                <CartesianGrid strokeDasharray="10 10" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip title="Tooltip">
-                  <span></span>
-                </Tooltip>
-                <Legend
-                  wrapperStyle={{
-                    paddingTop: '20px',
-                    textAlign: 'center',
-                  }}
-                />
-                <Bar dataKey="Motorized Boreholes" fill="#8884d8" />
-                <Bar dataKey="Wells (Covered & Open)" fill="#82ca9d" />
-                <Bar dataKey="Surface Water Points" fill="#ffc658" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Box>
-        </Paper>
-      </Box>
-
-      {/* Recent Observations Table */}
-      <Paper sx={{ p: 2, borderRadius: 2 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="h6">Recent Observations</Typography>
+      <Paper sx={{ mb: 3 }}>
+        {/* Map Header */}
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          p: 2,
+          borderBottom: '1px solid #e2e8f0'
+        }}>
+          <Typography variant="h6">Geographic Distribution</Typography>
           <Box>
-            <Button startIcon={<FaFilter style={{color:"#1F2937"}}/>} sx={{ mr: 1 }}>
-              <Typography variant="body1" color="#1F2937">Filter</Typography>
-            </Button>
-            <Button startIcon={<FaDownload style={{color: "#1F2937"}} />}>
-              <Typography variant="body1" color="#1F2937">Export</Typography>
-            </Button>
+            <IconButton size="small">
+              <FullscreenIcon />
+            </IconButton>
+            <IconButton size="small">
+              <MoreVertIcon />
+            </IconButton>
           </Box>
         </Box>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Location</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Demographics</TableCell>
-                <TableCell>Risk Level</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <ObservationRow
-                location="Sector 7, Block B"
-                date="08:30 AM"
-                demographics="Child"
-                riskLevel="high"
-              />
-              <ObservationRow
-                location="Sector 4, Block A"
-                date="09:15 AM"
-                demographics="Adult Male"
-                riskLevel="medium"
-              />
-              <ObservationRow
-                location="Sector 2, Block D"
-                date="10:45 AM"
-                demographics="Adult Female"
-                riskLevel="low"
-              />
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-          <Typography variant="body2" color="text.secondary">
-            Showing 3 of 50 entries
-          </Typography>
-          <Pagination count={3} shape="rounded" />
+
+        {/* Map Container */}
+        <Box sx={{ position: 'relative', height: 400 }}>
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d150598.46582809655!2d7.648291125907573!3d11.296615180519947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x11b27fc3df7cf997%3A0x7f813ac2a29bec28!2sKudan%2C%20Kaduna!5e0!3m2!1sen!2sng!4v1735721268833!5m2!1sen!2sng"
+            style={{
+              border: 0,
+              width: '100%',
+              height: '100%',
+            }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+          
+          {/* Map Controls */}
+          <Paper
+            elevation={2}
+            sx={{
+              position: 'absolute',
+              top: 12,
+              right: 12,
+              display: 'flex',
+              p: 0.5,
+              borderRadius: 1,
+              bgcolor: 'white',
+            }}
+          >
+            <IconButton size="small"><AddIcon /></IconButton>
+            <IconButton size="small"><RemoveIcon /></IconButton>
+            <IconButton size="small"><LayersIcon /></IconButton>
+          </Paper>
+
+          {/* Map Legend */}
+          <Paper
+            sx={{
+              position: 'absolute',
+              bottom: 12,
+              left: 12,
+              p: 1,
+              borderRadius: 1,
+              bgcolor: 'white',
+            }}
+          >
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#ef4444' }} />
+                <Typography variant="caption">High Risk</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#eab308' }} />
+                <Typography variant="caption">Medium Risk</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#22c55e' }} />
+                <Typography variant="caption">Low Risk</Typography>
+              </Box>
+            </Box>
+          </Paper>
         </Box>
       </Paper>
-    </Box>
-  );
-};
 
-// Stats Card Component
-interface StatsCardProps {
-  title: string;
-  value: string;
-  icon: React.ReactElement;
-  iconColor: string;
-}
-
-const StatsCard: React.FC<StatsCardProps> = ({ title, value, icon, iconColor }) => (
-  <Card sx={{ flex: 1, p: 2, borderRadius: 2 }}>
-    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-      {title}
-    </Typography>
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Typography variant="h4" sx={{ fontWeight: 600 }}>
-        {value}
-      </Typography>
-      <Box
-        sx={{
-          bgcolor: `${iconColor}15`,
-          p: 1,
-          borderRadius: '50%',
-          display: 'flex',
+      {/* Data Table */}
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: '#1e3a8a' }}>
+              <TableCell sx={{ color: 'white' }}>Location</TableCell>
+              <TableCell sx={{ color: 'white' }}>Date</TableCell>
+              <TableCell sx={{ color: 'white' }}>Demographics</TableCell>
+              <TableCell sx={{ color: 'white' }}>Status</TableCell>
+              <TableCell sx={{ color: 'white' }}>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.map((row, index) => {
+              const statusColor = getStatusChipColor(row.status);
+              return (
+                <TableRow key={index} sx={{ '&:nth-of-type(odd)': { bgcolor: '#f8fafc' } }}>
+                  <TableCell>{row.location}</TableCell>
+                  <TableCell>{row.date}</TableCell>
+                  <TableCell>{row.demographics}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={row.status}
+                      size="small"
+                      sx={{
+                        bgcolor: statusColor.bg,
+                        color: statusColor.color,
+                        fontWeight: 500,
+                      }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <IconButton size="small">
+                        <VisibilityIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                      <IconButton size="small">
+                        <MoreHorizIcon sx={{ fontSize: 20 }} />
+                      </IconButton>
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
           alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {React.cloneElement(icon, { sx: { color: iconColor } })}
-      </Box>
-    </Box>
-  </Card>
-);
-
-// Observation Row Component
-interface ObservationRowProps {
-  location: string;
-  date: string;
-  demographics: string;
-  riskLevel: 'high' | 'medium' | 'low';
-}
-
-const ObservationRow: React.FC<ObservationRowProps> = ({ location, date, demographics, riskLevel }) => {
-  const getRiskColor = (level: 'high' | 'medium' | 'low') => {
-    switch (level) {
-      case 'high':
-        return '#f44336';
-      case 'medium':
-        return '#ff9800';
-      case 'low':
-        return '#4caf50';
-      default:
-        return '#757575';
-    }
-  };
-
-  return (
-    <TableRow>
-      <TableCell>{location}</TableCell>
-      <TableCell>{date}</TableCell>
-      <TableCell>{demographics}</TableCell>
-      <TableCell>
-        <Box
-          sx={{
-            display: 'inline-block',
-            px: 1,
-            py: 0.5,
-            borderRadius: 1,
-            bgcolor: `${getRiskColor(riskLevel)}15`,
-            color: getRiskColor(riskLevel),
-            fontWeight: 500,
-          }}
-        >
-          {riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1)}
+          p: 2
+        }}>
+          <Typography variant="body2" color="text.secondary">
+            Showing 1 to 3 of 3 entries
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Chip
+              label="Previous"
+              variant="outlined"
+              disabled
+              size="small"
+            />
+            <Chip
+              label="1"
+              color="primary"
+              size="small"
+            />
+            <Chip
+              label="Next"
+              variant="outlined"
+              disabled
+              size="small"
+            />
+          </Box>
         </Box>
-      </TableCell>
-      <TableCell>
-        <IconButton size="small">
-          <MoreVertIcon />
-        </IconButton>
-      </TableCell>
-    </TableRow>
+      </TableContainer>
+    </Box>
   );
 };
 
