@@ -735,7 +735,7 @@ const WaterSourcesDashboard: React.FC = () => {
           </Box>
           
           <TableContainer sx={{ 
-            maxHeight: '400px',
+            maxHeight: '500px',
             overflow: 'auto',
             '&::-webkit-scrollbar': {
               width: '8px',
@@ -866,16 +866,16 @@ const WaterSourcesDashboard: React.FC = () => {
               )}
               <Grid container spacing={2}>
                 <Grid item xs={6}>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle2">Hamlet</Typography>
+                  <Typography>{selectedSource.hamlet}</Typography>
+                </Grid>
                   <Typography variant="subtitle2">Ward</Typography>
                   <Typography>{selectedSource.ward}</Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="subtitle2">Village</Typography>
                   <Typography>{selectedSource.village}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="subtitle2">Hamlet</Typography>
-                  <Typography>{selectedSource.hamlet}</Typography>
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="subtitle2">Type</Typography>

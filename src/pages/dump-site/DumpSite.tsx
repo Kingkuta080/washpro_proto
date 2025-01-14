@@ -32,9 +32,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import { apiController } from '../../axios';
 import { useSnackStore } from '../../store';
-import AddIcon from '@mui/icons-material/Add';
 import { Search } from '@mui/icons-material';
 import { FaFilter } from 'react-icons/fa';
+import { useForm, Controller } from 'react-hook-form';
 
 interface DumpSite {
   _id: string;
@@ -55,52 +55,6 @@ interface DumpSite {
   capturedAt: string;
 }
 
-const notificationCards = [
-  {
-    title: "Critical Sites",
-    count: "3 sites",
-    countColor: "#D32F2F", 
-    items: [
-      {
-        label: "East End Facility",
-        description: "Immediate attention required",
-        leftIcon: <img src="/svg/caution2.svg" alt="Critical" style={{ width: 20, height: 20 }} />,
-        rightIcon: <img src="/svg/arrowr.svg" alt="Forward" style={{ width: 20, height: 20 }} />,
-        bgcolor: "#ffebee",
-      },
-    ],
-  },
-  {
-    title: "Maintenance Schedule",
-    count: "Next 7 days",
-    countColor: "#1E88E5",
-    items: [
-      {
-        label: "South Gate Site",
-        description: "Scheduled for tomorrow",
-        leftIcon: <img src="/svg/clock.svg" alt="Calendar" style={{ width: 20, height: 20 }} />,
-        rightIcon: <img src="/svg/calanda.svg" alt="Calendar" style={{ width: 20, height: 20 }} />,
-        bgcolor: "#e3f2fd",
-      },
-    ],
-  },
-  {
-    title: "Recent Reports",
-    count: "Last 24h",
-    countColor: "#666",
-    items: [
-      {
-        label: "Capacity Report",
-        description: "Generated at 09:00 AM",
-        leftIcon: <img src="/svg/doc.svg" alt="Report" style={{ width: 20, height: 20 }} />,
-        rightIcon: <img src="/svg/dload.svg" alt="Download" style={{ width: 20, height: 20 }} />,
-        bgcolor: "#f5f5f5",
-      },
-    ],
-  },
-];
-
-
 const DumpSites = () => {
   const [dumpSites, setDumpSites] = useState<DumpSite[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -113,6 +67,7 @@ const DumpSites = () => {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [page, setPage] = useState(1);
   const rowsPerPage = 10;
+  const { control, handleSubmit, reset } = useForm<DumpSite>();
 
   const fetchDumpSites = async () => {
     setIsLoading(true);
@@ -149,13 +104,11 @@ const DumpSites = () => {
     handleMenuClose();
   };
 
-  const handleEditClick = () => {
+  const handleEditSite = () => {
+    if (selectedSite) {
+      reset(selectedSite);
+    }
     setOpenEditModal(true);
-    handleMenuClose();
-  };
-
-  const handleDeleteClick = () => {
-    setOpenDeleteModal(true);
     handleMenuClose();
   };
 
@@ -185,15 +138,85 @@ const DumpSites = () => {
     setPage(newPage);
   };
 
-  // Calculate pagination
+  const handleUpdateSite = async (data: DumpSite) => {
+    if (!data._id) return;
+    try {
+      setIsLoading(true);
+      await apiController.put(`/dump-sites/${data._id}`, data);
+      setAlert({
+        variant: 'success',
+        message: 'Dump site updated successfully',
+      });
+      setOpenEditModal(false);
+      fetchDumpSites();
+    } catch (error) {
+      setAlert({
+        variant: 'error',
+        message: error instanceof Error ? error.message : 'Failed to update dump site',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files.length > 0) {
+      setSelectedImage(event.target.files[0]);
+    }
+  };
+
   const startIndex = (page - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const displayedSites = dumpSites.slice(startIndex, endIndex);
   const totalPages = Math.ceil(dumpSites.length / rowsPerPage);
 
+  const notificationCards = [
+    {
+      title: "Critical Sites",
+      count: "3 sites",
+      countColor: "#D32F2F",
+      items: [
+        {
+          label: "East End Facility",
+          description: "Immediate attention required",
+          leftIcon: <ErrorIcon sx={{ fontSize: 20, color: "#D32F2F" }} />,
+          rightIcon: <CheckCircleIcon sx={{ fontSize: 20, color: "#4CAF50" }} />,
+          bgcolor: "#ffebee",
+        },
+      ],
+    },
+    {
+      title: "Maintenance Schedule",
+      count: "Next 7 days",
+      countColor: "#1E88E5",
+      items: [
+        {
+          label: "South Gate Site",
+          description: "Scheduled for tomorrow",
+          leftIcon: <WarningAmberIcon sx={{ fontSize: 20, color: "#FFA000" }} />,
+          rightIcon: <CheckCircleIcon sx={{ fontSize: 20, color: "#4CAF50" }} />,
+          bgcolor: "#e3f2fd",
+        },
+      ],
+    },
+    {
+      title: "Recent Reports",
+      count: "Last 24h",
+      countColor: "#666",
+      items: [
+        {
+          label: "Capacity Report",
+          description: "Generated at 09:00 AM",
+          leftIcon: <CheckCircleIcon sx={{ fontSize: 20, color: "#4CAF50" }} />,
+          rightIcon: <ErrorIcon sx={{ fontSize: 20, color: "#D32F2F" }} />,
+          bgcolor: "#f5f5f5",
+        },
+      ],
+    },
+  ];
+
   return (
     <Box sx={{ padding: 4, bgcolor: "#f8f9fc" }}>
-      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
@@ -226,7 +249,7 @@ const DumpSites = () => {
           </Button>
         </Box>
       </Box>
-      {/* Analytics/Metrics Section */}
+
       <Grid container spacing={3} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} md={3}>
           <Card sx={{ bgcolor: '#fff', borderRadius: 2 }}>
@@ -333,7 +356,6 @@ const DumpSites = () => {
         </Grid>
       </Grid>
 
-      {/* Search and Filter Section */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <TextField
           size="small"
@@ -420,7 +442,6 @@ const DumpSites = () => {
         </Box>
       </Paper>
 
-      {/* Action Menu */}
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -429,17 +450,130 @@ const DumpSites = () => {
         <MenuItem onClick={handleViewSite}>
           <Visibility sx={{ mr: 1 }} /> View
         </MenuItem>
-        <MenuItem onClick={handleEditClick}>
+        <MenuItem onClick={handleEditSite}>
           <Edit sx={{ mr: 1 }} /> Edit
         </MenuItem>
-        <MenuItem onClick={handleDeleteClick} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => setOpenDeleteModal(true)} sx={{ color: 'error.main' }}>
           <Delete sx={{ mr: 1 }} /> Delete
         </MenuItem>
       </Menu>
 
-      {/* View Modal */}
+      <Dialog open={openEditModal} onClose={() => setOpenEditModal(false)} maxWidth="md" fullWidth>
+        <DialogTitle>Edit Dump Site</DialogTitle>
+        <DialogContent>
+          {selectedSite && (
+            <form onSubmit={handleSubmit(handleUpdateSite)}>
+              <Controller
+                name="ward"
+                control={control}
+                defaultValue={selectedSite.ward}
+                render={({ field }) => <TextField {...field} label="Ward" fullWidth margin="normal" />}
+              />
+              <Controller
+                name="village"
+                control={control}
+                defaultValue={selectedSite.village}
+                render={({ field }) => <TextField {...field} label="Village" fullWidth margin="normal" />}
+              />
+              <Controller
+                name="hamlet"
+                control={control}
+                defaultValue={selectedSite.hamlet}
+                render={({ field }) => <TextField {...field} label="Hamlet" fullWidth margin="normal" />}
+              />
+              <Controller
+                name="condition"
+                control={control}
+                defaultValue={selectedSite.condition}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Condition"
+                    select
+                    fullWidth
+                    margin="normal"
+                  >
+                    {['Period', 'Temporary', 'Permanent'].map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+              <Controller
+                name="status"
+                control={control}
+                defaultValue={selectedSite.status}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Status"
+                    select
+                    fullWidth
+                    margin="normal"
+                  >
+                    {['Improved', 'Unimproved'].map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+              <Controller
+                name="safetyRisk"
+                control={control}
+                defaultValue={selectedSite.safetyRisk}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Safety Risk"
+                    select
+                    fullWidth
+                    margin="normal"
+                  >
+                    {['Maintained', 'Unmaintained', 'High Risk'].map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+              />
+              <TextField
+                type="file"
+                onChange={handleImageChange}
+                fullWidth
+                margin="normal"
+                inputProps={{ accept: 'image/*' }}
+              />
+            </form>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenEditModal(false)}>Cancel</Button>
+          <Button onClick={handleSubmit(handleUpdateSite)} color="primary" disabled={isLoading}>
+            {isLoading ? <CircularProgress size={24} /> : 'Update'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
+        <DialogTitle>Delete Dump Site</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to delete this dump site?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteModal(false)}>Cancel</Button>
+          <Button onClick={handleDeleteSite} color="error" disabled={isLoading}>
+            {isLoading ? <CircularProgress size={24} /> : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Dialog open={openViewModal} onClose={() => setOpenViewModal(false)} maxWidth="md" fullWidth>
-        <DialogTitle>View Dump Site Details</DialogTitle>
+        <DialogTitle>Dump Site Details</DialogTitle>
         <DialogContent>
           {selectedSite && (
             <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -484,27 +618,11 @@ const DumpSites = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation Modal */}
-      <Dialog open={openDeleteModal} onClose={() => setOpenDeleteModal(false)}>
-        <DialogTitle>Delete Dump Site</DialogTitle>
-        <DialogContent>
-          <Typography>Are you sure you want to delete this dump site?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteModal(false)}>Cancel</Button>
-          <Button onClick={handleDeleteSite} color="error" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} /> : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-            {/* Notifications Section */}
       <Grid container spacing={3} sx={{ marginBottom: 4 }}>
         {notificationCards.map((card, index) => (
           <Grid item xs={12} sm={4} key={index}>
             <Card sx={{ borderRadius: 2, boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}>
               <CardContent>
-                {/* Header */}
                 <Box
                   sx={{
                     display: "flex",
@@ -527,7 +645,6 @@ const DumpSites = () => {
                   </Typography>
                 </Box>
 
-                {/* Items */}
                 {card.items.map((item, i) => (
                   <Box
                     key={i}
@@ -541,7 +658,6 @@ const DumpSites = () => {
                       marginBottom: 1,
                     }}
                   >
-                    {/* Left Icon and Content */}
                     <Box sx={{ display: "flex", alignItems: "center" }}>
                       {item.leftIcon}
                       <Box sx={{ marginLeft: 2 }}>
@@ -557,7 +673,6 @@ const DumpSites = () => {
                       </Box>
                     </Box>
 
-                    {/* Right Icon */}
                     {item.rightIcon}
                   </Box>
                 ))}

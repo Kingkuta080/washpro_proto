@@ -3,8 +3,13 @@ import {
   BarChart,
   CleaningServices,
   ReportProblem,
-  Wc,
 } from '@mui/icons-material';
+import BuildIcon from "@mui/icons-material/Build";
+import CallSplitIcon from "@mui/icons-material/CallSplit";
+import CheckIcon from "@mui/icons-material/Check";
+import GroupIcon from "@mui/icons-material/Group";
+import StarIcon from "@mui/icons-material/Star";
+import WcIcon from "@mui/icons-material/Wc";
 import {
   Box,
   Card,
@@ -97,9 +102,38 @@ const ToiletStats = () => {
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { icon: <Wc fontSize="large" />, label: 'Total Units', value: 85 },
-          { icon: <Wc fontSize="large" />, label: 'WC', value: 20 },
-        ].map((item, index) => (
+{
+  icon: <WcIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Total Units",
+  value: 85,
+},
+{
+  icon: <CheckIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Functional",
+  value: 77,
+},
+{
+  icon: <BuildIcon sx={{ fontSize: 60, color: "#ff0000" }} />,
+  label: "Under Repair",
+  value: 7,
+  labelColor: "#ff0000",
+  valueColor: "#ff0000",
+},
+{
+  icon: <CallSplitIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Latrines",
+  value: 34,
+},
+{
+  icon: <GroupIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Squatting",
+  value: 18,
+},
+{
+  icon: <StarIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "WC",
+  value: 20,
+},        ].map((item, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card
               sx={{
