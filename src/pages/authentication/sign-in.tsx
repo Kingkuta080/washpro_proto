@@ -26,10 +26,16 @@ interface LoginResponse {
   refreshToken: string;
 }
 
+// Define the interface for the snack store
+interface SnackStore {
+  setAlert: (alert: { variant: string; message: string }) => void;
+  setLoading: (loading: boolean) => void;
+}
+
 const SignInPage: FC = function () {
   const navigate = useNavigate();
   const { logIn } = useAuthStore();
-  const { setAlert, setLoading } = useSnackStore();
+  const { setAlert, setLoading } = useSnackStore() as SnackStore; // Cast to SnackStore type
   const [formData, setFormData] = useState({
     email: "",
     password: "",

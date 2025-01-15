@@ -24,6 +24,8 @@ import {
   Assignment,
   Visibility,
   People,
+  Warning,
+  Schedule,
 } from "@mui/icons-material";
 import { useState } from "react";
 import { RiWaterFlashFill } from "react-icons/ri";
@@ -57,9 +59,10 @@ const SideBar = ({
     { text: "Dashboard", icon: <Dashboard />, path: "/" },
     { text: "Intervention", icon: <LocationOn />, path: "/interventions" },
     { text: "Wash", icon: <MdSanitizer />, path: "/wash" },
-    { text: "Public Space Types", icon: <Public />, path: "/public-space-types" },
     { text: "Water Sources", icon: <RiWaterFlashFill />, path: "/water-sources" },
     { text: "Toilet Facilities", icon: <FaToilet />, path: "/toilet-facilities" },
+    { text: "Water Source Risk", icon: <Warning />, path: "/water-source-risk" },
+    { text: "Routine Activities", icon: <Schedule />, path: "/routine-activities" },
   ];
 
   const wasteSubItems = [
@@ -156,7 +159,7 @@ const SideBar = ({
                     backgroundColor: "#25306B",
                     color: "white",
                     "&:hover": {
-                      bgcolor: "#25306B", // No hover effect for active
+                      bgcolor: "#25306B",
                     },
                   },
                   "&:not(.active):hover": {
@@ -237,7 +240,7 @@ const SideBar = ({
                         backgroundColor: "#25306B",
                         color: "white",
                         "&:hover": {
-                          bgcolor: "#25306B", // No hover effect for active
+                          bgcolor: "#25306B",
                         },
                       },
                       "&:not(.active):hover": {
@@ -319,7 +322,7 @@ const SideBar = ({
                         backgroundColor: "#25306B",
                         color: "white",
                         "&:hover": {
-                          bgcolor: "#25306B", // No hover effect for active
+                          bgcolor: "#25306B",
                         },
                       },
                       "&:not(.active):hover": {
@@ -363,7 +366,7 @@ const SideBar = ({
                     backgroundColor: "#25306B",
                     color: "white",
                     "&:hover": {
-                      bgcolor: "#25306B", // No hover effect for active
+                      bgcolor: "#25306B",
                     },
                   },
                   "&:not(.active):hover": {
@@ -407,7 +410,7 @@ const SideBar = ({
             },
           }}
         >
-          <ListItemIcon  sx={{ minWidth: 40, color: "inherit" }}>
+          <ListItemIcon sx={{ minWidth: 40, color: "inherit" }}>
             <Logout />
           </ListItemIcon>
           {!isCollapsed && (

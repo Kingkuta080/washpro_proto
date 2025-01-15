@@ -22,6 +22,7 @@ import {
   Assessment,
   Groups
 } from '@mui/icons-material';
+import { FaHandsWash } from 'react-icons/fa';
 
 interface KPICardProps {
   icon: React.ReactNode;
@@ -105,7 +106,7 @@ const Dashboard: React.FC = () => {
       unit: "%"
     },
     {
-      icon: <IconifyIcon icon="mdi:hand-wash" />,
+      icon: <FaHandsWash style={{ color: "blue" }} />,
       title: "Sanitation Activities",
       value: 56
     },

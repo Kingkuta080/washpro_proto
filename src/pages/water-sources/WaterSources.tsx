@@ -866,10 +866,10 @@ const WaterSourcesDashboard: React.FC = () => {
               )}
               <Grid container spacing={2}>
                 <Grid item xs={6}>
-                <Grid item xs={6}>
                   <Typography variant="subtitle2">Hamlet</Typography>
                   <Typography>{selectedSource.hamlet}</Typography>
                 </Grid>
+                <Grid item xs={6}>
                   <Typography variant="subtitle2">Ward</Typography>
                   <Typography>{selectedSource.ward}</Typography>
                 </Grid>

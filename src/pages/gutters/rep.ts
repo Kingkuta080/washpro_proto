@@ -1,8 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import {
+  Assignment,
+  BarChart,
+  CleaningServices,
+  ReportProblem,
+} from '@mui/icons-material';
+import BuildIcon from "@mui/icons-material/Build";
+import CallSplitIcon from "@mui/icons-material/CallSplit";
+import CheckIcon from "@mui/icons-material/Check";
+import GroupIcon from "@mui/icons-material/Group";
+import StarIcon from "@mui/icons-material/Star";
+import WcIcon from "@mui/icons-material/Wc";
 import {
   Box,
   Card,
+  Grid,
   Typography,
+  Select,
+  MenuItem,
   Button,
   Table,
   TableBody,
@@ -10,392 +24,301 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  CircularProgress,
 } from '@mui/material';
-import { Eye, MoreVer, MoreVerticalIconticalIcon } from 'lucide-react';
-import { apiController } from '../../axios'; // Adjust the import based on your project structure
-import { useSnackStore } from '../../store'; // Adjust the import based on your project structure
 
-const GuttersDashboard: React.FC = () => {
-  const [guttersData, setGuttersData] = useState([]); // For the existing gutter data
-  const [newData, setNewData] = useState([]); // For the new table data
-  const [selectedGutter, setSelectedGutter] = useState(null);
-  const [selectedNewData, setSelectedNewData] = useState(null);
-  const [openViewModal, setOpenViewModal] = useState(false);
-  const [openEditModal, setOpenEditModal] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [openNewDataModal, setOpenNewDataModal] = useState(false);
-  const [openDeleteNewDataModal, setOpenDeleteNewDataModal] = useState(false); // Define the state for delete modal
-  const [isLoading, setIsLoading] = useState(false);
-  const { setAlert } = useSnackStore();
-  const [newGutter, setNewGutter] = useState({
-    picture: '',
-    ward: '',
-    village: '',
-    hamlet: '',
-    geolocation: { type: 'Point', coordinates: [0, 0] },
-    condition: 'Constructed with Block',
-    status: 'Maintained',
-    dischargePoint: 'yes',
-    createdBy: '',
-    capturedAt: new Date().toISOString(),
-  });
-  const [newDataEntry, setNewDataEntry] = useState({
-    // Define the structure for the new data entry
-    name: '',
-    description: '',
-    createdAt: new Date().toISOString(),
-  });
+const ToiletStats = () => {
+  const toiletTypes = [
+    { type: 'Western Style', count: 50, status: 'Operational' },
+    { type: 'Eastern Style', count: 30, status: 'Maintenance' },
+    { type: 'Accessible', count: 20, status: 'Operational' },
+  ];
 
-  useEffect(() => {
-    fetchGutters();
-    fetchNewData(); // Fetch new data for the second table
-  }, []);
-
-  const fetchGutters = async () => {
-    setIsLoading(true);
-    try {
-      const response = await apiController.get('/gutters');
-      setGuttersData(response.data || []); // Ensure it's an array
-    } catch (error) {
-      console.error('Error fetching gutters:', error);
-      setAlert({ variant: 'error', message: 'Failed to fetch gutters' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchNewData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await apiController.get('/new-data'); // Adjust the endpoint as needed
-      setNewData(response.data || []); // Ensure it's an array
-    } catch (error) {
-      console.error('Error fetching new data:', error);
-      setAlert({ variant: 'error', message: 'Failed to fetch new data' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleViewGutter = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const response = await apiController.get(`/gutters/${id}`);
-      setSelectedGutter(response.data);
-      setOpenViewModal(true);
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to fetch gutter details' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleEditGutter = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const response = await apiController.get(`/gutters/${id}`);
-      setSelectedGutter(response.data);
-      setNewGutter(response.data);
-      setOpenEditModal(true);
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to fetch gutter details' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUpdateGutter = async () => {
-    if (!selectedGutter?._id) return;
-
-    try {
-      setIsLoading(true);
-      const response = await apiController.put(`/gutters/${selectedGutter._id}`, newGutter);
-      setAlert({ variant: 'success', message: response.message || 'Gutter updated successfully' });
-      setOpenEditModal(false);
-      fetchGutters(); // Refresh the gutter list after update
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to update gutter' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteGutter = async () => {
-    if (!selectedGutter?._id) return;
-
-    try {
-      setIsLoading(true);
-      const response = await apiController.delete(`/gutters/${selectedGutter._id}`);
-      setAlert({ variant: 'success', message: response.message || 'Gutter deleted successfully' });
-      setOpenDeleteModal(false);
-      fetchGutters(); // Refresh the gutter list after deletion
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to delete gutter' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleCreateGutter = async () => {
-    try {
-      setIsLoading(true);
-      const response = await apiController.post('/gutters', newGutter);
-      setAlert({ variant: 'success', message: response.message || 'Gutter created successfully' });
-      fetchGutters(); // Refresh the gutter list after creation
-      setNewGutter({
-        picture: '',
-        ward: '',
-        village: '',
-        hamlet: '',
-        geolocation: { type: 'Point', coordinates: [0, 0] },
-        condition: 'Constructed with Block',
-        status: 'Maintained',
-        dischargePoint: 'yes',
-        createdBy: '',
-        capturedAt: new Date().toISOString(),
-      }); // Reset form
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to create gutter' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleNewDataEntry = async () => {
-    try {
-      setIsLoading(true);
-      const response = await apiController.post('/new-data', newDataEntry); // Adjust the endpoint as needed
-      setAlert({ variant: 'success', message: response.message || 'New data entry created successfully' });
-      fetchNewData(); // Refresh the new data list after creation
-      setNewDataEntry({ name: '', description: '', createdAt: new Date().toISOString() }); // Reset form
-      setOpenNewDataModal(false);
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to create new data entry' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleEditNewData = async (id: string) => {
-    setIsLoading(true);
-    try {
-      const response = await apiController.get(`/new-data/${id}`); // Adjust the endpoint as needed
-      setSelectedNewData(response.data);
-      setNewDataEntry(response.data);
-      setOpenNewDataModal(true);
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to fetch new data details' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUpdateNewData = async () => {
-    if (!selectedNewData?._id) return;
-
-    try {
-      setIsLoading(true);
-      const response = await apiController.put(`/new-data/${selectedNewData._id}`, newDataEntry); // Adjust the endpoint as needed
-      setAlert({ variant: 'success', message: response.message || 'New data entry updated successfully' });
-      fetchNewData(); // Refresh the new data list after update
-      setOpenNewDataModal(false);
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to update new data entry' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteNewData = async () => {
-    if (!selectedNewData?._id) return;
-
-    try {
-      setIsLoading(true);
-      const response = await apiController.delete(`/new-data/${selectedNewData._id}`); // Adjust the endpoint as needed
-      setAlert({ variant: 'success', message: response.message || 'New data entry deleted successfully' });
-      fetchNewData(); // Refresh the new data list after deletion
-      setOpenDeleteNewDataModal(false);
-    } catch (error) {
-      setAlert({ variant: 'error', message: 'Failed to delete new data entry' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const actions = [
+    {
+      icon: <ReportProblem fontSize="small" sx={{ color: '#3b82f6' }} />,
+      label: 'Report Issue',
+      bgColor: '#f1f5f9',
+      textColor: '#3b82f6',
+    },
+    {
+      icon: <CleaningServices fontSize="small" sx={{ color: '#8b5cf6' }} />,
+      label: 'Schedule Cleaning',
+      bgColor: '#faf5ff',
+      textColor: '#8b5cf6',
+    },
+    {
+      icon: <Assignment fontSize="small" sx={{ color: '#22c55e' }} />,
+      label: 'Maintenance Log',
+      bgColor: '#f0fdf4',
+      textColor: '#22c55e',
+    },
+    {
+      icon: <BarChart fontSize="small" sx={{ color: '#f97316' }} />,
+      label: 'View Analytics',
+      bgColor: '#fff7ed',
+      textColor: '#f97316',
+    },
+  ];
 
   return (
-    <Box>
-      <Card>
-        <Typography variant="h5">Gutters Overview</Typography>
-        <Button variant="contained" onClick={() => setOpenNewDataModal(true)}>Add New Gutter</Button>
-        <TableContainer>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>IC</TableCell>
-                <TableCell>Ward</TableCell>
-                <TableCell>Village</TableCell>
-                <TableCell>Hamlet</TableCell>
-                <TableCell>Condition</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Discharge Point</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={8} align="center">
-                    <CircularProgress />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                guttersData.map((gutter) => (
-                  <TableRow key={gutter._id}>
-                    <TableCell>{gutter.ic}</TableCell>
-                    <TableCell>{gutter.ward}</TableCell>
-                    <TableCell>{gutter.village}</TableCell>
-                    <TableCell>{gutter.hamlet}</TableCell>
-                    <TableCell>{gutter.condition}</TableCell>
-                    <TableCell>{gutter.status}</TableCell>
-                    <TableCell>{gutter.dischargePoint}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleViewGutter(gutter._id)}>
-                        <Eye />
-                      </IconButton>
-                      <IconButton onClick={() => handleEditGutter(gutter._id)}>
-                        <MoreVerticalIcon />
-                      </IconButton>
-                      <IconButton onClick={() => { setSelectedGutter(gutter); setOpenDeleteModal(true); }}>
-                        <MoreVerticalIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Card>
-
-      {/* New Data Table */}
-      <Card sx={{ mt: 4 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>New Data Overview</Typography>
-        <Button variant="contained" onClick={() => setOpenNewDataModal(true)}>Add New Data</Button>
-        <TableContainer>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    <CircularProgress />
-                  </TableCell>
-                </TableRow>
-              ) : (
-                newData.map((data) => (
-                  <TableRow key={data._id}>
-                    <TableCell>{data.name}</TableCell>
-                    <TableCell>{data.description}</TableCell>
-                    <TableCell>{new Date(data.createdAt).toLocaleString()}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleEditNewData(data._id)}>
-                        <MoreVerticalIcon />
-                      </IconButton>
-                      <IconButton onClick={() => { setSelectedNewData(data); setOpenDeleteNewDataModal(true); }}>
-                        <MoreVerticalIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Card>
-
-      {/* Modals for New Data */}
-      <Dialog open={openNewDataModal} onClose={() => setOpenNewDataModal(false)}>
-        <DialogTitle>Add New Data</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Name"
-            value={newDataEntry.name}
-            onChange={(e) => setNewDataEntry({ ...newDataEntry, name: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Description"
-            value={newDataEntry.description}
-            onChange={(e) => setNewDataEntry({ ...newDataEntry, description: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenNewDataModal(false)}>Cancel</Button>
-          <Button onClick={handleNewDataEntry} color="primary" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} /> : 'Create'}
+    <Box sx={{ p: 3 }}>
+      {/* Header Section */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          mb: 3,
+          alignItems: 'center',
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+          Toilet Facilities
+        </Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Select size="small" defaultValue="lga" sx={{ minWidth: 120 }}>
+            <MenuItem value="lga">LGA</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="ward" sx={{ minWidth: 120 }}>
+            <MenuItem value="ward">Ward</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="village" sx={{ minWidth: 120 }}>
+            <MenuItem value="village">Village</MenuItem>
+          </Select>
+          <Select size="small" defaultValue="hamlet" sx={{ minWidth: 120 }}>
+            <MenuItem value="hamlet">Hamlet</MenuItem>
+          </Select>
+          <Button
+            variant="contained"
+            sx={{
+              bgcolor: '#00b4d8',
+              '&:hover': { bgcolor: '#0096c7' },
+            }}
+          >
+            View Report
           </Button>
-        </DialogActions>
-      </Dialog>
+        </Box>
+      </Box>
 
-      {/* Edit New Data Modal */}
-      <Dialog open={openNewDataModal} onClose={() => setOpenNewDataModal(false)}>
-        <DialogTitle>Edit New Data</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="Name"
-            value={newDataEntry.name}
-            onChange={(e) => setNewDataEntry({ ...newDataEntry, name: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Description"
-            value={newDataEntry.description}
-            onChange={(e) => setNewDataEntry({ ...newDataEntry, description: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenNewDataModal(false)}>Cancel</Button>
-          <Button onClick={handleUpdateNewData} color="primary" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} /> : 'Update'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Stats Cards */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {[
+{
+  icon: <WcIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Total Units",
+  value: 85,
+},
+{
+  icon: <CheckIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Functional",
+  value: 77,
+},
+{
+  icon: <BuildIcon sx={{ fontSize: 60, color: "#ff0000" }} />,
+  label: "Under Repair",
+  value: 7,
+  labelColor: "#ff0000",
+  valueColor: "#ff0000",
+},
+{
+  icon: <CallSplitIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Latrines",
+  value: 34,
+},
+{
+  icon: <GroupIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "Squatting",
+  value: 18,
+},
+{
+  icon: <StarIcon sx={{ fontSize: 60, color: "#25306b" }} />,
+  label: "WC",
+  value: 20,
+},        ].map((item, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card
+              sx={{
+                p: 2,
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              {item.icon}
+              <Typography
+                variant="h4"
+                sx={{ fontWeight: 'bold', mt: 2, color: '#1e3a8a' }}
+              >
+                {item.value}
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                {item.label}
+              </Typography>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
-      {/* Delete Confirmation Modal for New Data */}
-      <Dialog open={openDeleteNewDataModal} onClose={() => setOpenDeleteNewDataModal(false)}>
-        <DialogTitle>Delete New Data</DialogTitle>
-        <DialogContent>
-          <Typography>Are you sure you want to delete this entry?</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteNewDataModal(false)}>Cancel</Button>
-          <Button onClick={handleDeleteNewData} color="error" disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} /> : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {/* Toilet Types Overview */}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <Card sx={{ height: '100%' }}>
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
+                Toilet Types Overview
+              </Typography>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ bgcolor: '#1e3a8a' }}>
+                      <TableCell sx={{ color: 'white' }}>Type</TableCell>
+                      <TableCell sx={{ color: 'white' }}>Count</TableCell>
+                      <TableCell sx={{ color: 'white' }}>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {toiletTypes.map((type) => (
+                      <TableRow key={type.type}>
+                        <TableCell>{type.type}</TableCell>
+                        <TableCell>{type.count}</TableCell>
+                        <TableCell>
+                          <Box
+                            sx={{
+                              bgcolor:
+                                type.status === 'Operational'
+                                  ? '#dcfce7'
+                                  : '#fef9c3',
+                              color:
+                                type.status === 'Operational'
+                                  ? '#166534'
+                                  : '#854d0e',
+                              px: 2,
+                              py: 0.5,
+                              borderRadius: 1,
+                              display: 'inline-block',
+                            }}
+                          >
+                            {type.status}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          </Card>
+        </Grid>
+
+        {/* Maintenance Status */}
+        <Grid item xs={12} md={4}>
+          <Card sx={{ height: '100%' }}>
+            <Box sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                Maintenance Status
+              </Typography>
+              <Box
+                sx={{
+                  bgcolor: '#f0fdf4',
+                  p: 3,
+                  borderRadius: 1,
+                  mb: 2,
+                  height: '100%',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography>Well Maintained</Typography>
+                  <Typography variant="h4" color="success.main">
+                    75%
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box
+                sx={{
+                  bgcolor: '#fef2f2',
+                  p: 3,
+                  borderRadius: 1,
+                  height: '100%',
+                }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography>Needs Attention</Typography>
+                  <Typography variant="h4" color="error.main">
+                    25%
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Card>
+        </Grid>
+      </Grid>
+
+      {/* Quick Actions */}
+      <Box sx={{ mt: 3 }}>
+        <Card>
+          <Box sx={{ p: 3 }}>
+            <Typography
+              variant="h6"
+              sx={{ mb: 2, fontWeight: 500, color: '#1e293b' }}
+            >
+              Quick Actions
+            </Typography>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: 2,
+              }}
+            >
+              {actions.map((action, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    p: 3,
+                    bgcolor: action.bgColor,
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      opacity: 0.9,
+                      transform: 'translateY(-1px)',
+                    },
+                  }}
+                >
+                  {action.icon}
+                  <Typography
+                    sx={{
+                      color: action.textColor,
+                      fontWeight: 500,
+                    }}
+                  >
+                    {action.label}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          </Box>
+        </Card>
+      </Box>
     </Box>
   );
 };
 
-export default GuttersDashboard;
+export default ToiletStats;
